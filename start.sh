@@ -7,7 +7,7 @@ MEDIA_MOUNT=${MEDIA_MOUNT:-"/mnt/media"}
 sed -e "s|@HOSTS_ALLOW@|${HOSTS_ALLOW}|g" \
     -e "s|@SERVER_STRING@|${SERVER_STRING}|g" \
     -e "s|@MEDIA_MOUNT@|${MEDIA_MOUNT}|g" \
-    /etc/samba/smb.conf.template /etc/samba/smb.conf
+    /etc/samba/smb.conf.template > /etc/samba/smb.conf
 
 
 # Display some data
