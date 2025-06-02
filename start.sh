@@ -28,11 +28,8 @@ echo "$SMB_USERS" | sed 's/;/\n/g' | while read -r USERPASS; do
     if [[ -n "$user" ]]; then
         echo "Adding user: $user"
 
-        adduser -D -H -s "/sbin/nologin" "$user"
+        adduser -D -H -S -s "/sbin/nologin" "$user"
         echo -e "$pass\n$pass" | smbpasswd -s -a "$user"
-        # Add the user to the system and Samba
-        #useradd -M -s /usr/sbin/nologin "$user"
-        #smbpasswd -a "$user"
     fi
 done
 
