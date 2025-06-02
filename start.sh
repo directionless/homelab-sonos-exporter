@@ -8,10 +8,10 @@ MEDIA_MOUNT=${MEDIA_MOUNT:-"/mnt/media"}
 NFS_MOUNT=${NFS_MOUNT:-"unknown"}
 NFS_OPTIONS=${NFS_OPTIONS:-"nosuid,nodev,nofail,ro"}
 
-func header() {
+function header() {
     echo -e "\n#############################################"
-    echo -e "# $@"
-    echo -e "#############################################\n"
+    echo "# $*"
+    echo -e "#############################################"
 }
 
 header Building Samba Config
@@ -21,13 +21,13 @@ sed -e "s|@HOSTS_ALLOW@|${HOSTS_ALLOW}|g" \
     /etc/samba/smb.conf.template | tee /etc/samba/smb.conf
 
 header Check NFS Server Connectivity
-ping -c 3 ${NFS_SERVER} || {
+ping -c 3 "${NFS_SERVER}" || {
     echo "NFS server ${NFS_SERVER} is unreachable. Exiting."
     exit 1
 }
 
 header Mounting NFS Share
-mkdir -p ${MEDIA_MOUNT}
+mkdir -p "${MEDIA_MOUNT}"
 echo "${NFS_MOUNT} ${MEDIA_MOUNT} nfs4 ${NFS_OPTIONS} 0 0" | tee -a /etc/fstab
 mount -a || {
     echo "Failed to mount NFS shares. Exiting."
