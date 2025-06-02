@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 HOSTS_ALLOW=${HOSTS_ALLOW:-"127."}
 SERVER_STRING=${SERVER_STRING:-"Samba Server"}
 MEDIA_MOUNT=${MEDIA_MOUNT:-"/mnt/media"}
 
-
-NFS_MOUNT=${NFS_MOUNT:-"unknown"}
-NFS_SERVER=$(echo "$NFS_MOUNT" | awk -F: '{print $1}')
-NFS_OPTIONS=${NFS_OPTIONS:-"nosuid,nodev,nofail,ro"}
 
 function header() {
     echo -e "\n#############################################"
@@ -21,19 +19,23 @@ sed -e "s|@HOSTS_ALLOW@|${HOSTS_ALLOW}|g" \
     -e "s|@MEDIA_MOUNT@|${MEDIA_MOUNT}|g" \
     /etc/samba/smb.conf.template | tee /etc/samba/smb.conf
 
-#header Check NFS Server Connectivity to "${NFS_SERVER}"
-#ping -c 3 "${NFS_SERVER}" || {
-#    echo "NFS server ${NFS_SERVER} is unreachable. Exiting."
-#    exit 1
-#}
+header Setting Up Users
+# Don't use `;` or `:`
+echo "$SMB_USERS" | sed 's/;/\n/g' | while read -r USERPASS; do
+    user=${USERPASS%:*} # ABCDE
+    pass=${USERPASS#*:} # 12345
 
-#header Mounting NFS Share
-#mkdir -p "${MEDIA_MOUNT}"
-#echo "${NFS_MOUNT} ${MEDIA_MOUNT} nfs4 ${NFS_OPTIONS} 0 0" | tee -a /etc/fstab
-#mount -a || {
-#    echo "Failed to mount NFS shares. Exiting."
-#    exit 1
-#}
+    if [[ -n "$user" ]]; then
+        echo "Adding user: $user"
+
+        adduser -D -H -s "/sbin/nologin" "$user"
+        echo -e "$pass\n$pass" | smbpasswd -s -a "$user"
+        # Add the user to the system and Samba
+        #useradd -M -s /usr/sbin/nologin "$user"
+        #smbpasswd -a "$user"
+    fi
+done
+
 
 header df
 df -h
