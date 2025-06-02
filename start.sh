@@ -21,19 +21,22 @@ sed -e "s|@HOSTS_ALLOW@|${HOSTS_ALLOW}|g" \
     -e "s|@MEDIA_MOUNT@|${MEDIA_MOUNT}|g" \
     /etc/samba/smb.conf.template | tee /etc/samba/smb.conf
 
-header Check NFS Server Connectivity to "${NFS_SERVER}"
-ping -c 3 "${NFS_SERVER}" || {
-    echo "NFS server ${NFS_SERVER} is unreachable. Exiting."
-    exit 1
-}
+#header Check NFS Server Connectivity to "${NFS_SERVER}"
+#ping -c 3 "${NFS_SERVER}" || {
+#    echo "NFS server ${NFS_SERVER} is unreachable. Exiting."
+#    exit 1
+#}
 
-header Mounting NFS Share
-mkdir -p "${MEDIA_MOUNT}"
-echo "${NFS_MOUNT} ${MEDIA_MOUNT} nfs4 ${NFS_OPTIONS} 0 0" | tee -a /etc/fstab
-mount -a || {
-    echo "Failed to mount NFS shares. Exiting."
-    exit 1
-}
+#header Mounting NFS Share
+#mkdir -p "${MEDIA_MOUNT}"
+#echo "${NFS_MOUNT} ${MEDIA_MOUNT} nfs4 ${NFS_OPTIONS} 0 0" | tee -a /etc/fstab
+#mount -a || {
+#    echo "Failed to mount NFS shares. Exiting."
+#    exit 1
+#}
+
+header df
+df -h
 
 header ip a configuration
 ip a
