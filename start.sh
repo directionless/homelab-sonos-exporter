@@ -6,6 +6,7 @@ MEDIA_MOUNT=${MEDIA_MOUNT:-"/mnt/media"}
 
 
 NFS_MOUNT=${NFS_MOUNT:-"unknown"}
+NFS_SERVER=$(echo "$NFS_MOUNT" | awk -F: '{print $1}')
 NFS_OPTIONS=${NFS_OPTIONS:-"nosuid,nodev,nofail,ro"}
 
 function header() {
@@ -20,7 +21,7 @@ sed -e "s|@HOSTS_ALLOW@|${HOSTS_ALLOW}|g" \
     -e "s|@MEDIA_MOUNT@|${MEDIA_MOUNT}|g" \
     /etc/samba/smb.conf.template | tee /etc/samba/smb.conf
 
-header Check NFS Server Connectivity
+header Check NFS Server Connectivity to "${NFS_SERVER}"
 ping -c 3 "${NFS_SERVER}" || {
     echo "NFS server ${NFS_SERVER} is unreachable. Exiting."
     exit 1
