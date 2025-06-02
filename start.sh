@@ -5,7 +5,7 @@ set -euo pipefail
 HOSTS_ALLOW=${HOSTS_ALLOW:-"127."}
 SERVER_STRING=${SERVER_STRING:-"Samba Server"}
 MEDIA_MOUNT=${MEDIA_MOUNT:-"/mnt/media"}
-
+SMB_USERS=${SMB_USERS:-""}
 
 function header() {
     echo -e "\n#############################################"
