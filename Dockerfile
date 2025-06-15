@@ -1,11 +1,16 @@
-FROM debian:bookworm-slim AS build
-
-RUN apt-get update &&  apt-get install -y nfs-common openssh-server samba 
+FROM alpine:3.22 AS build
 
 
-# Cleanup
-RUN apt-get autoremove -y; apt-get clean -y
-RUN rm -rf /var/cache/apt/archives /var/lib/apt/lists
+RUN apk --no-cache --no-progress upgrade && \
+    apk --no-cache --no-progress add bash samba shadow tini tzdata && \
+    addgroup -S smb && \
+    adduser -S -D -H -h /tmp -s /sbin/nologin -G smb -g 'Samba User' smbuser
+
+COPY smb.conf.template /etc/samba/smb.conf.template
+COPY start.sh /usr/bin/
+
 
 FROM scratch
 COPY --from=build / /
+
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/start.sh"]
